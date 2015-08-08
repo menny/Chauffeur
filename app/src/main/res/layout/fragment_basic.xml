@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="net.evendanan.chauffeur.sample.BasicFragment"
+              android:orientation="vertical"
+              android:background="?android:windowBackground">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"/>
+
+    <Button
+        android:id="@+id/go_deeper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Go Deeper"/>
+
+    <Button
+        android:id="@+id/go_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Show Dialog"/>
+
+    <Button
+        android:id="@+id/go_on_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Show On Top Transition"/>
+
+    <Button
+        android:id="@+id/go_to_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Go To Root"/>
+
+    <Button
+        android:id="@+id/go_to_root_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Go To Root 2"/>
+
+</LinearLayout>
