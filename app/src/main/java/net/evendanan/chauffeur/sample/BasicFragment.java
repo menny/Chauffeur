@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
-import net.evendanan.chauffeur.lib.TransitionExperiences;
+import net.evendanan.chauffeur.lib.experiences.TransitionExperiences;
 
 public class BasicFragment extends Fragment {
     private static final String ARG_TITLE = "BasicFragment_title";
@@ -29,27 +29,25 @@ public class BasicFragment extends Fragment {
                     getActivity().startActivity(goToRootIntent);
                     break;
                 case R.id.go_to_root_2:
+                    //or directly call the API
                     Fragment root2Fragment = BasicFragment.newInstance("A Different Root", "This is a completely different root fragment.");
-                    Intent goToRoot2Intent = FragmentChauffeurActivity.createStartActivityIntentForAddingFragmentToUi(getActivity(), MainActivity.class, root2Fragment, TransitionExperiences.ROOT_FRAGMENT_EXPERIENCE_TRANSITION);
-                    getActivity().startActivity(goToRoot2Intent);
+                    FragmentChauffeurActivity activityForRoot = (FragmentChauffeurActivity) getActivity();
+                    activityForRoot.addFragmentToUi(root2Fragment, TransitionExperiences.ROOT_FRAGMENT_EXPERIENCE_TRANSITION);
                     break;
                 case R.id.go_deeper:
                     Fragment deeperFragment = BasicFragment.newInstance("Deeper from "+mTitle, "This is a deeper fragment, which came from "+mTitle);
-                    //or, you can directly call FragmentChauffeurActivity API
                     FragmentChauffeurActivity activityForGoDeeper = (FragmentChauffeurActivity) getActivity();
                     activityForGoDeeper.addFragmentToUi(deeperFragment, TransitionExperiences.DEEPER_EXPERIENCE_TRANSITION);
                     break;
                 case R.id.go_on_top:
                     Fragment onTopFragment = BasicFragment.newInstance("On-top "+mTitle, "This is a On-Top experience fragment for "+mTitle);
-                    //or, you can directly call FragmentChauffeurActivity API
                     FragmentChauffeurActivity activityForOnTop = (FragmentChauffeurActivity) getActivity();
                     activityForOnTop.addFragmentToUi(onTopFragment, TransitionExperiences.OUTSIDE_ON_TOP_EXPERIENCE_TRANSITION);
                     break;
                 case R.id.go_dialog:
-                    Fragment dialogFragment = BasicFragment.newInstance("Dialog "+mTitle, "This is a dialog experience fragment for "+mTitle);
-                    //or, you can directly call FragmentChauffeurActivity API
-                    FragmentChauffeurActivity activityForDialog = (FragmentChauffeurActivity) getActivity();
-                    activityForDialog.addFragmentToUi(dialogFragment, TransitionExperiences.DIALOG_EXPERIENCE_TRANSITION);
+                    Fragment dialogFragment = BasicFragment.newInstance("Dialog " + mTitle, "This is a dialog experience fragment for " + mTitle);
+                    Intent goToDialogIntent = FragmentChauffeurActivity.createStartActivityIntentForAddingFragmentToUi(getActivity(), MainActivity.class, dialogFragment, TransitionExperiences.DIALOG_EXPERIENCE_TRANSITION);
+                    getActivity().startActivity(goToDialogIntent);
                     break;
             }
         }

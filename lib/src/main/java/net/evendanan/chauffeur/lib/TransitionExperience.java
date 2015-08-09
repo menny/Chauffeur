@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
+import net.evendanan.chauffeur.lib.experiences.TransitionExperiences;
+
 /**
  * Provides a {@link FragmentTransaction} behavior.
  * For most cases, using {@link TransitionExperiences} can provide most of the experiences. If you want

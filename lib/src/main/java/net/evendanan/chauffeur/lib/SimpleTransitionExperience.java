@@ -38,7 +38,7 @@ public class SimpleTransitionExperience implements TransitionExperience, Parcela
         mExitFragmentPopOutAnimationId = exitFragmentPopOutAnimationId;
     }
 
-    private SimpleTransitionExperience(Parcel in) {
+    protected SimpleTransitionExperience(Parcel in) {
         mEnterFragmentAddInAnimationId = in.readInt();
         mEnterFragmentAddOutAnimationId = in.readInt();
         mExitFragmentPopInAnimationId = in.readInt();
@@ -57,7 +57,6 @@ public class SimpleTransitionExperience implements TransitionExperience, Parcela
                 mEnterFragmentAddOutAnimationId,
                 mExitFragmentPopInAnimationId,
                 mExitFragmentPopOutAnimationId);
-        transaction.addToBackStack(null);
     }
 
     @Override

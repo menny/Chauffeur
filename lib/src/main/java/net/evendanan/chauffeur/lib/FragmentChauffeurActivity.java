@@ -84,7 +84,7 @@ public abstract class FragmentChauffeurActivity extends AppCompatActivity {
                 Fragment fragment = fragmentClass.newInstance();
                 if (activityArgs.containsKey(KEY_FRAGMENT_ARGS_TO_ADD)) {
                     fragment.setArguments(activityArgs.getBundle(KEY_FRAGMENT_ARGS_TO_ADD));
-                    activityArgs.remove(KEY_FRAGMENT_CLASS_TO_ADD);
+                    activityArgs.remove(KEY_FRAGMENT_ARGS_TO_ADD);
                 }
                 TransitionExperience experience = activityArgs.getParcelable(KEY_FRAGMENT_ANIMATION);
                 addFragmentToUi(fragment, experience);
