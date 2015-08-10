@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- this animation is for UI context - a new, deeper experience, fragment is added. This is for the new fragment -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
      android:interpolator="@android:anim/decelerate_interpolator"
      android:duration="@android:integer/config_shortAnimTime"
