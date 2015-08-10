@@ -2,7 +2,7 @@
 A very simple fragments driver mechanism.
 
 # Dependency
-I'm using [![JitPack](https://img.shields.io/github/release/menny/Chauffeur.svg?label=JitPack)](https://jitpack.io/#menny/Chauffeur/0.0.2) to publish this library.
+I'm using [![JitPack](https://img.shields.io/github/release/menny/Chauffeur.svg?label=JitPack)](https://jitpack.io/#menny/Chauffeur/0.0.3) to publish this library.
 
 Add it in your build.gradle at the end of repositories:
 ```
@@ -14,7 +14,7 @@ repositories {
 Step 2. Add the dependency in the form
 ```
 dependencies {
-    compile 'com.github.menny:Chauffeur:0.0.2'
+    compile 'com.github.menny:Chauffeur:0.0.3'
 }
 ```
 
