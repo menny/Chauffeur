@@ -14,12 +14,13 @@ repositories {
 Step 2. Add the dependency in the form
 ```
 dependencies {
-    compile 'com.github.menny:Chauffeur:0.0.3'
+    compile 'com.github.menny:Chauffeur:0.0.4'
 }
 ```
 
 # Usage
 
+[Storynory https://github.com/menny/ironhenry] is using this library. Reference it for real world usage.
 
 # License
 
