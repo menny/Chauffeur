@@ -8,8 +8,19 @@ import net.evendanan.chauffeur.lib.TransitionExperience;
  * A few basic experiences
  */
 public class TransitionExperiences {
+    /**
+     * Replaces the current stack with the given fragment.
+     */
     public static final TransitionExperience ROOT_FRAGMENT_EXPERIENCE_TRANSITION = new RootFragmentTransitionExperience();
 
+    /**
+     * Replaces the current stack with the given fragment, but keeps the original root fragment as the root.
+     */
+    public static final TransitionExperience SUB_ROOT_FRAGMENT_EXPERIENCE_TRANSITION = new SubRootFragmentTransitionExperience();
+
+    /**
+     * Adds the given fragment on-top of the current fragment, using a slide-in animation
+     */
     public static final TransitionExperience DEEPER_EXPERIENCE_TRANSITION = new SimpleTransitionExperience(
             R.anim.ui_context_deeper_add_in, R.anim.ui_context_deeper_add_out,
             R.anim.ui_context_deeper_pop_in, R.anim.ui_context_deeper_pop_out);

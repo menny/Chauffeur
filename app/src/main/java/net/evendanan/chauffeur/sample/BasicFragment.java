@@ -21,7 +21,7 @@ public class BasicFragment extends Fragment {
     private final View.OnClickListener mNavigationClickHandler = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch(v.getId()) {
+            switch (v.getId()) {
                 case R.id.go_to_root:
                     //either use an Intent to navigate to another fragment
                     Fragment rootFragment = BasicFragment.newInstance("Root", "This is a root fragment.");
@@ -34,13 +34,18 @@ public class BasicFragment extends Fragment {
                     FragmentChauffeurActivity activityForRoot = (FragmentChauffeurActivity) getActivity();
                     activityForRoot.addFragmentToUi(root2Fragment, TransitionExperiences.ROOT_FRAGMENT_EXPERIENCE_TRANSITION);
                     break;
+                case R.id.go_to_root_3:
+                    Fragment root3Fragment = BasicFragment.newInstance("A Sub-Root", "This is a root fragment, on-top the original root.");
+                    FragmentChauffeurActivity activityForSubRoot = (FragmentChauffeurActivity) getActivity();
+                    activityForSubRoot.addFragmentToUi(root3Fragment, TransitionExperiences.SUB_ROOT_FRAGMENT_EXPERIENCE_TRANSITION);
+                    break;
                 case R.id.go_deeper:
-                    Fragment deeperFragment = BasicFragment.newInstance("Deeper from "+mTitle, "This is a deeper fragment, which came from "+mTitle);
+                    Fragment deeperFragment = BasicFragment.newInstance("Deeper from " + mTitle, "This is a deeper fragment, which came from " + mTitle);
                     FragmentChauffeurActivity activityForGoDeeper = (FragmentChauffeurActivity) getActivity();
                     activityForGoDeeper.addFragmentToUi(deeperFragment, TransitionExperiences.DEEPER_EXPERIENCE_TRANSITION);
                     break;
                 case R.id.go_on_top:
-                    Fragment onTopFragment = BasicFragment.newInstance("On-top "+mTitle, "This is a On-Top experience fragment for "+mTitle);
+                    Fragment onTopFragment = BasicFragment.newInstance("On-top " + mTitle, "This is a On-Top experience fragment for " + mTitle);
                     FragmentChauffeurActivity activityForOnTop = (FragmentChauffeurActivity) getActivity();
                     activityForOnTop.addFragmentToUi(onTopFragment, TransitionExperiences.OUTSIDE_ON_TOP_EXPERIENCE_TRANSITION);
                     break;
@@ -93,6 +98,7 @@ public class BasicFragment extends Fragment {
 
         view.findViewById(R.id.go_to_root).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_to_root_2).setOnClickListener(mNavigationClickHandler);
+        view.findViewById(R.id.go_to_root_3).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_deeper).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_dialog).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_on_top).setOnClickListener(mNavigationClickHandler);
