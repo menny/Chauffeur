@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "net.evendanan.chauffeur.sample"
@@ -25,18 +25,18 @@ dependencies {
      * ```
      * compile project(':lib')
      * ```
-     * In real world, you should use
+     * In the real world, you should use
      * ```
      * repositories {
      *   ///
      *   maven { url "https://jitpack.io" }
      * }
-     * compile 'com.github.menny:Chauffeur:0.0.5'
+     * compile 'com.github.menny:Chauffeur:0.0.6'
      * ```
      */
     compile project(':lib')
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.android.support:support-annotations:23.0.1'
-    compile 'com.android.support:support-v4:23.0.1'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:support-annotations:23.1.0'
+    compile 'com.android.support:support-v4:23.1.0'
 }
