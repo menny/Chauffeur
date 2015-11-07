@@ -14,7 +14,7 @@ repositories {
 Step 2. Add the dependency in the form
 ```
 dependencies {
-    compile 'com.github.menny:Chauffeur:0.0.7'
+    compile 'com.github.menny:Chauffeur:0.0.8'
 }
 ```
 

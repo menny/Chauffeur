@@ -31,7 +31,7 @@ dependencies {
      *   ///
      *   maven { url "https://jitpack.io" }
      * }
-     * compile 'com.github.menny:Chauffeur:0.0.7'
+     * compile 'com.github.menny:Chauffeur:0.0.8'
      * ```
      */
     compile project(':lib')

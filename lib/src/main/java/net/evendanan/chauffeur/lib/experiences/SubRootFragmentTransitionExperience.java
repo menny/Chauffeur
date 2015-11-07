@@ -36,7 +36,7 @@ import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
 
     @Override
     public void onAddFragmentToContainer(@NonNull FragmentChauffeurActivity fragmentChauffeurActivity, @NonNull Fragment fragment, @NonNull FragmentTransaction transaction, @IdRes int containerId) {
-        transaction.add(containerId, fragment);
+        transaction.replace(containerId, fragment);
         transaction.addToBackStack(null);
     }
 }
