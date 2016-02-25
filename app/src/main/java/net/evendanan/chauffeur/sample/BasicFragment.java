@@ -54,6 +54,9 @@ public class BasicFragment extends Fragment {
                     Intent goToDialogIntent = FragmentChauffeurActivity.createStartActivityIntentForAddingFragmentToUi(getActivity(), MainActivity.class, dialogFragment, TransitionExperiences.DIALOG_EXPERIENCE_TRANSITION);
                     getActivity().startActivity(goToDialogIntent);
                     break;
+                case R.id.go_to_permissions:
+                    startActivity(new Intent(getContext(), PermissionsMainActivity.class));
+                    break;
             }
         }
     };
@@ -102,5 +105,6 @@ public class BasicFragment extends Fragment {
         view.findViewById(R.id.go_deeper).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_dialog).setOnClickListener(mNavigationClickHandler);
         view.findViewById(R.id.go_on_top).setOnClickListener(mNavigationClickHandler);
+        view.findViewById(R.id.go_to_permissions).setOnClickListener(mNavigationClickHandler);
     }
 }

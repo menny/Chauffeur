@@ -67,4 +67,11 @@
         android:layout_gravity="center_horizontal"
         android:text="Go To Sub-Root"/>
 
+    <Button
+        android:id="@+id/go_to_permissions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Go To Permissions Demo"/>
 </LinearLayout>

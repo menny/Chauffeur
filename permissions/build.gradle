@@ -19,8 +19,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:support-annotations:23.2.0'
+    compile project(":lib")
+    compile project(path: ':lib')
 }
 
 // build a jar with source files
