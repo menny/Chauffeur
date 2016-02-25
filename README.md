@@ -1,5 +1,6 @@
 # Chauffeur
 A very simple fragments driver mechanism.
+In addition, it provides a simple Android Marshmallow Runtime Permissions handling.
 
 # Dependency
 I'm using [![JitPack](https://img.shields.io/github/release/menny/Chauffeur.svg?label=JitPack)](https://jitpack.io/#menny/Chauffeur) to publish this library.
@@ -14,17 +15,23 @@ repositories {
 Step 2. Add the dependency in the form
 ```
 dependencies {
-    compile 'com.github.menny:Chauffeur:0.0.8'
+    compile 'com.github.menny.Chauffeur:lib:-SNAPSHOT'
+}
+```
+Alternative Step 2. Add the dependency to the permissions handling library:
+```
+dependencies {
+    compile 'com.github.menny.Chauffeur:permissions:-SNAPSHOT'
 }
 ```
 
 # Usage
 
-[Storynory https://github.com/menny/ironhenry] is using this library. Reference it for real world usage.
+[Storynory https://github.com/menny/ironhenry] and [AnySoftKeyboard https://github.com/AnySoftKeyboard/AnySoftKeyboard] are using this library. Reference to those for real world usage.
 
 # License
 
-Copyright 2015 Menny Even-Danan
+Copyright 2016 Menny Even-Danan
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
