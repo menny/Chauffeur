@@ -27,7 +27,7 @@ dependencies {
 
 # Usage
 
-[Storynory https://github.com/menny/ironhenry] and [AnySoftKeyboard https://github.com/AnySoftKeyboard/AnySoftKeyboard] are using this library. Reference to those for real world usage.
+[Storynory](https://github.com/menny/ironhenry) and [AnySoftKeyboard](https://github.com/AnySoftKeyboard/AnySoftKeyboard) are using this library. Reference to those for real world usage.
 
 # License
 
