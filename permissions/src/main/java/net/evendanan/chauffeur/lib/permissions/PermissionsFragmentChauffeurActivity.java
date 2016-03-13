@@ -25,8 +25,8 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
 
 import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
@@ -37,13 +37,17 @@ import java.util.List;
 public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauffeurActivity {
 
     private static final String TAG = "Permissions";
+    private static final String INTENT_PERMISSION_ACTION = "PermissionsFragmentChauffeurActivity_INTENT_PERMISSION_ACTION";
     private static final String PERMISSION_ARG_REQUEST_ID = "PermissionsFragmentChauffeurActivity_PERMISSION_ARG_REQUEST_ID";
     private static final String PERMISSION_ARG_REQUIRED_PERMISSIONS = "PermissionsFragmentChauffeurActivity_PERMISSION_ARG_REQUIRED_PERMISSIONS";
+
+    private final SparseArrayCompat<PermissionsRequest> mPermissionsRequestsInProgress = new SparseArrayCompat<>();
 
     /**
      * Creates an Intent that asks PermissionsFragmentChauffeurActivity to start a request for permissions.
      * NOTE: The result of this request will be in the context of the PermissionsFragmentChauffeurActivity!
      * You should use this method to initiate requests from Services (for example).
+     *
      * @return an Intent that starts PermissionsFragmentChauffeurActivity, or null if the permissions are already granted.
      */
     @Nullable
@@ -51,8 +55,9 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
         List<String> requiredPermissions = filterGrantedPermissions(context, permissions);
         if (requiredPermissions.size() > 0) {
             Intent intent = new Intent(context, mainActivity);
+            intent.setAction(INTENT_PERMISSION_ACTION);
             intent.putExtra(PERMISSION_ARG_REQUEST_ID, requestId);
-            intent.putExtra(PERMISSION_ARG_REQUIRED_PERMISSIONS, requiredPermissions.toArray(new String[requiredPermissions.size()]));
+            intent.putExtra(PERMISSION_ARG_REQUIRED_PERMISSIONS, permissions);
             return intent;
         } else {
             return null;
@@ -74,49 +79,66 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
 
     /**
      * Start a permissions request flow for the provided permissions.
-     * <p/>
-     * This method should only be called by this Activity! If you want to ask a permission from a Fragment, use
-     * {@link #startPermissionsRequestFromFragment(Fragment, int, String...)}
-     * @param requestId   you should know where to handle the provided request ID (a Fragment or this Activity).
-     * @param permissions should be part of {@link android.Manifest.permission}.
-     * @return true if permissions-request-flow has started, false if all permissions are already granted.
      */
-    protected boolean startPermissionsRequest(int requestId, @NonNull String... permissions) {
-        List<String> requiredPermissions = filterGrantedPermissions(this, permissions);
+    public void startPermissionsRequest(PermissionsRequest permissionsRequest) {
+        List<String> requiredPermissions = filterGrantedPermissions(this, permissionsRequest.getRequestedPermissions());
         if (requiredPermissions.size() > 0) {
             //asking for permissions
-            ActivityCompat.requestPermissions(this, requiredPermissions.toArray(new String[requiredPermissions.size()]), requestId);
-            return true;
+            mPermissionsRequestsInProgress.put(permissionsRequest.getRequestCode(), permissionsRequest);
+            ActivityCompat.requestPermissions(this, requiredPermissions.toArray(new String[requiredPermissions.size()]), permissionsRequest.getRequestCode());
         } else {
-            return false;
+            permissionsRequest.onPermissionsGranted();
         }
     }
 
-    /**
-     * Start a permissions request flow for the provided permissions from a Fragment.
-     * <p/>
-     * This will ensure that the result will be sent to the given fragment.
-     * This method should only be called by fragment owned by this Activity! If you want to ask a permission for this Activity, use
-     * {@link #startPermissionsRequest(int, String...)}
-     * @param requestId   you should know where to handle the provided request ID (a Fragment or this Activity).
-     * @param permissions should be part of {@link android.Manifest.permission}.
-     * @return true if permissions-request-flow has started, false if all permissions are already granted.
-     */
-    public boolean startPermissionsRequestFromFragment(Fragment fragment, int requestId, @NonNull String... permissions) {
-        List<String> requiredPermissions = filterGrantedPermissions(this, permissions);
-        if (requiredPermissions.size() > 0) {
-            //asking for permissions
-            fragment.requestPermissions(requiredPermissions.toArray(new String[requiredPermissions.size()]), requestId);
-            return true;
-        } else {
-            return false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionsRequest request = mPermissionsRequestsInProgress.get(requestCode);
+        if (request != null) {
+            //this is a request made using PermissionsRequest
+            //and it is no longer "in-progress"
+            mPermissionsRequestsInProgress.remove(requestCode);
+            if (allPermissionsResultsAreGranted(grantResults)) {
+                request.onPermissionsGranted();
+            } else {
+                //if the result is DENIED and the OS says "do not show rationale",
+                // it means the user has ticked "Don't ask me again".
+                if (anyPermissionRequiresRationale(permissions)) {
+                    request.onPermissionsDenied();
+                } else {
+                    request.onUserDeclinedPermissionsCompletely();
+                }
+            }
         }
+    }
+
+    private boolean anyPermissionRequiresRationale(String[] permissions) {
+        for (String permission : permissions) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) return true;
+        }
+
+        return false;
+    }
+
+    private boolean allPermissionsResultsAreGranted(int[] grantResults) {
+        for (int grantResult : grantResults) {
+            if (grantResult == PackageManager.PERMISSION_DENIED) return false;
+        }
+
+        return true;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handlePermissionsRequestIntent(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPermissionsRequestsInProgress.clear();
     }
 
     @Override
@@ -128,15 +150,43 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
     }
 
     private void handlePermissionsRequestIntent(Intent intent) {
-        int requestId = intent.getIntExtra(PERMISSION_ARG_REQUEST_ID, 0);
-        String[] permissions = intent.getStringArrayExtra(PERMISSION_ARG_REQUIRED_PERMISSIONS);
-        if (requestId != 0 && permissions != null && permissions.length > 0) {
-            //removing processed details
-            intent.removeExtra(PERMISSION_ARG_REQUEST_ID);
-            intent.removeExtra(PERMISSION_ARG_REQUIRED_PERMISSIONS);
+        if (INTENT_PERMISSION_ACTION.equals(intent.getAction())) {
+            int requestId = intent.getIntExtra(PERMISSION_ARG_REQUEST_ID, 0);
+            String[] permissions = intent.getStringArrayExtra(PERMISSION_ARG_REQUIRED_PERMISSIONS);
+            intent.setAction(null/*not going to process this action again*/);
+            if (requestId == 0 || permissions == null || permissions.length == 0) return;
+            PermissionsRequest request = createPermissionRequestFromIntentRequest(requestId, permissions, intent);
             //asking for permissions
-            ActivityCompat.requestPermissions(this, permissions, requestId);
+            startPermissionsRequest(request);
         }
+    }
+
+    /**
+     * Creates a {@link PermissionsRequest} from the intercepted Intent (which was created using {@link #createIntentToPermissionsRequest(Context, Class, int, String...)}.
+     * Default implementation will return an implementation with no-op callbacks, override this method if you want to do
+     * something more specific.
+     * @param requestId request-id parsed from the Intent.
+     * @param permissions permissions array parsed from the Intent.
+     * @param intent the intercepted Intent
+     */
+    @NonNull
+    protected PermissionsRequest createPermissionRequestFromIntentRequest(int requestId, @NonNull String[] permissions, @NonNull Intent intent) {
+        return new PermissionsRequest.PermissionsRequestBase(requestId, permissions) {
+            @Override
+            public void onPermissionsGranted() {
+                /*no-op*/
+            }
+
+            @Override
+            public void onPermissionsDenied() {
+                /*no-op*/
+            }
+
+            @Override
+            public void onUserDeclinedPermissionsCompletely() {
+                /*no-op*/
+            }
+        };
     }
 
     /**

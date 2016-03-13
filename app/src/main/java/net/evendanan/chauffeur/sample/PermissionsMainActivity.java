@@ -1,6 +1,7 @@
 package net.evendanan.chauffeur.sample;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -10,8 +11,64 @@ import android.view.View;
 import android.widget.Toast;
 
 import net.evendanan.chauffeur.lib.permissions.PermissionsFragmentChauffeurActivity;
+import net.evendanan.chauffeur.lib.permissions.PermissionsRequest;
 
 public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.permissions_activity_main);
+        findViewById(R.id.activity_ask_for_contacts).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startPermissionsRequest(new ActivityContactsPermissionRequest());
+            }
+        });
+        findViewById(R.id.navigate_to_app_permissions_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAppPermissionsActivity();
+            }
+        });
+    }
+
+    @Override
+    @IdRes
+    protected int getFragmentRootUiElementId() {
+        return R.id.fragments_content_layout;
+    }
+
+    @Override
+    @NonNull
+    protected Fragment createRootFragmentInstance() {
+        return PermissionsFragment.newInstance();
+    }
+
+    @NonNull
+    @Override
+    protected PermissionsRequest createPermissionRequestFromIntentRequest(int requestId, @NonNull String[] permissions, @NonNull Intent intent) {
+        if (requestId == PermissionRequestCodes.ContactsNotification.getRequestCode()) {
+            return new PermissionsRequest.PermissionsRequestBase(requestId, permissions) {
+                @Override
+                public void onPermissionsGranted() {
+                    Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was granted!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onPermissionsDenied() {
+                    Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was denied!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onUserDeclinedPermissionsCompletely() {
+                    Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was declined!", Toast.LENGTH_SHORT).show();
+                }
+            };
+        } else {
+            return super.createPermissionRequestFromIntentRequest(requestId, permissions, intent);
+        }
+    }
 
     public enum PermissionRequestCodes {
         Activity_Contacts,
@@ -26,63 +83,25 @@ public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivit
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.permissions_activity_main);
-        findViewById(R.id.activity_ask_for_contacts).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (startPermissionsRequest(PermissionRequestCodes.Activity_Contacts.getRequestCode(), Manifest.permission.READ_CONTACTS)) {
-                    Toast.makeText(getApplicationContext(), "READ_CONTACTS request flow started", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "READ_CONTACTS already granted", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        findViewById(R.id.navigate_to_app_permissions_settings).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startAppPermissionsActivity();
-            }
-        });
-    }
+    private class ActivityContactsPermissionRequest extends PermissionsRequest.PermissionsRequestBase {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PermissionRequestCodes.Activity_Contacts.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS was denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS was granted!", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == PermissionsMainActivity.PermissionRequestCodes.ContactsIntent.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS via intent was denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS via intent was granted!", Toast.LENGTH_SHORT).show();
-            }
-
-        } else if (requestCode == PermissionsMainActivity.PermissionRequestCodes.ContactsNotification.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was granted!", Toast.LENGTH_SHORT).show();
-            }
-
+        protected ActivityContactsPermissionRequest() {
+            super(PermissionRequestCodes.Activity_Contacts.getRequestCode(), Manifest.permission.READ_CONTACTS);
         }
-    }
 
-    @Override
-    @IdRes
-    protected int getFragmentRootUiElementId() {
-        return R.id.fragments_content_layout;
-    }
+        @Override
+        public void onPermissionsGranted() {
+            Toast.makeText(getApplicationContext(), "READ_CONTACTS granted", Toast.LENGTH_SHORT).show();
+        }
 
-    @Override
-    @NonNull
-    protected Fragment createRootFragmentInstance() {
-        return PermissionsFragment.newInstance();
+        @Override
+        public void onPermissionsDenied() {
+            Toast.makeText(getApplicationContext(), "READ_CONTACTS denied", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onUserDeclinedPermissionsCompletely() {
+            Toast.makeText(getApplicationContext(), "READ_CONTACTS declined completely", Toast.LENGTH_SHORT).show();
+        }
     }
 }

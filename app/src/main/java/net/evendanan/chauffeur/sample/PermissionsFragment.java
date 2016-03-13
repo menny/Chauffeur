@@ -4,20 +4,21 @@ import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import net.evendanan.chauffeur.lib.permissions.PermissionsFragmentChauffeurActivity;
+import net.evendanan.chauffeur.lib.permissions.PermissionsRequest;
 
 
 public class PermissionsFragment extends Fragment implements View.OnClickListener {
@@ -68,25 +69,13 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         if (mOwningActivity == null) return;
         switch (v.getId()) {
             case R.id.fragment_ask_for_contacts:
-                if (mOwningActivity.startPermissionsRequestFromFragment(this, PermissionsMainActivity.PermissionRequestCodes.Fragment_Contacts.getRequestCode(), Manifest.permission.READ_CONTACTS)) {
-                    Toast.makeText(getContext(), "Fragment asks for READ_CONTACTS", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Fragment has READ_CONTACTS", Toast.LENGTH_SHORT).show();
-                }
+                mOwningActivity.startPermissionsRequest(new FragmentContactsPermissionRequest());
                 break;
             case R.id.fragment_ask_for_location:
-                if (mOwningActivity.startPermissionsRequestFromFragment(this, PermissionsMainActivity.PermissionRequestCodes.Fragment_Location.getRequestCode(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Toast.makeText(getContext(), "Fragment asks for ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Fragment has ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
-                }
+                mOwningActivity.startPermissionsRequest(new FragmentLocationPermissionRequest());
                 break;
             case R.id.fragment_ask_for_both:
-                if (mOwningActivity.startPermissionsRequestFromFragment(this, PermissionsMainActivity.PermissionRequestCodes.Fragment_Both.getRequestCode(), Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS)) {
-                    Toast.makeText(getContext(), "Fragment asks for both", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Fragment has both", Toast.LENGTH_SHORT).show();
-                }
+                mOwningActivity.startPermissionsRequest(new FragmentBothPermissionsRequest());
                 break;
             case R.id.fragment_ask_for_contacts_via_intent:
                 Intent directCallIntent = PermissionsFragmentChauffeurActivity.createIntentToPermissionsRequest(getContext(), PermissionsMainActivity.class, PermissionsMainActivity.PermissionRequestCodes.ContactsIntent.getRequestCode(), Manifest.permission.READ_CONTACTS);
@@ -118,31 +107,104 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mOwningActivity == null) return;
-        if (requestCode == PermissionsMainActivity.PermissionRequestCodes.Fragment_Contacts.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getContext(), "Fragment READ_CONTACTS was denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Fragment READ_CONTACTS was granted!", Toast.LENGTH_SHORT).show();
-            }
+    private class FragmentContactsPermissionRequest extends PermissionsRequest.PermissionsRequestBase {
 
-        } else if (requestCode == PermissionsMainActivity.PermissionRequestCodes.Fragment_Location.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getContext(), "Fragment LOCATION was denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Fragment LOCATION was granted!", Toast.LENGTH_SHORT).show();
-            }
+        protected FragmentContactsPermissionRequest() {
+            super(PermissionsMainActivity.PermissionRequestCodes.Fragment_Contacts.getRequestCode(), Manifest.permission.READ_CONTACTS);
+        }
 
-        } else if (requestCode == PermissionsMainActivity.PermissionRequestCodes.Fragment_Both.getRequestCode()) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(getContext(), "Fragment both were denied!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "Fragment both were granted!", Toast.LENGTH_SHORT).show();
-            }
+        @Override
+        public void onPermissionsGranted() {
+            Toast.makeText(getContext(), "Fragment READ_CONTACTS was granted!", Toast.LENGTH_SHORT).show();
+        }
 
+        @Override
+        public void onPermissionsDenied() {
+            Toast.makeText(getContext(), "Fragment READ_CONTACTS was denied!", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onUserDeclinedPermissionsCompletely() {
+            Toast.makeText(getContext(), "Fragment READ_CONTACTS was declined!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private class FragmentLocationPermissionRequest extends PermissionsRequest.PermissionsRequestBase {
+        protected FragmentLocationPermissionRequest() {
+            super(PermissionsMainActivity.PermissionRequestCodes.Fragment_Location.getRequestCode(), Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        @Override
+        public void onPermissionsGranted() {
+            Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was granted!", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPermissionsDenied() {
+            Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was denied!", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onUserDeclinedPermissionsCompletely() {
+            Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was declined!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class FragmentBothPermissionsRequest extends PermissionsRequest.PermissionsRequestBase {
+        private final DialogInterface.OnClickListener mOnRetryClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mOwningActivity != null)
+                    mOwningActivity.startPermissionsRequest(FragmentBothPermissionsRequest.this);
+            }
+        };
+        private final DialogInterface.OnClickListener mOnCancelClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(), "Fragment BOTH was denied!", Toast.LENGTH_SHORT).show();
+            }
+        };
+        private final DialogInterface.OnClickListener mOnShowSettingsClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mOwningActivity != null) mOwningActivity.startAppPermissionsActivity();
+            }
+        };
+
+        protected FragmentBothPermissionsRequest() {
+            super(PermissionsMainActivity.PermissionRequestCodes.Fragment_Both.getRequestCode(),
+                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS);
+        }
+
+        @Override
+        public void onPermissionsGranted() {
+            Toast.makeText(getContext(), "Fragment BOTH were granted!", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPermissionsDenied() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Permissions Required");
+            builder.setMessage("For a better user experience, we want to know a bit about you.\n" +
+                    "If we know where you are and who are you friends, we can give you\n" +
+                    "a much better suggestions.");
+            builder.setPositiveButton("Okay", mOnRetryClickListener);
+            builder.setNegativeButton("No, thanks.", mOnCancelClickListener);
+            builder.show();
+        }
+
+        @Override
+        public void onUserDeclinedPermissionsCompletely() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Permissions Required");
+            builder.setMessage("You gotta understand! You can not use this feature if we\n" +
+                    "are not allowed to read your contacts and current location!\n" +
+                    "Please enable the required permissions in Settings.");
+            builder.setPositiveButton("Take me there", mOnShowSettingsClickListener);
+            builder.setNegativeButton("No, thanks.", mOnCancelClickListener);
+            builder.show();
+        }
+    }
+
+
 }
