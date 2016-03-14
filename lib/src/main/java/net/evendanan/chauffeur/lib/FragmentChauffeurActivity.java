@@ -26,9 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-public abstract class FragmentChauffeurActivity extends AppCompatActivity {
-
-    public static final String ROOT_FRAGMENT_TAG = "FragmentChauffeurActivity_ROOT_FRAGMENT_TAG";
+public abstract class FragmentChauffeurActivity extends AppCompatActivity implements FragmentChauffeur {
 
     private static final String INTENT_FRAGMENT_ACTION = "FragmentChauffeurActivity_INTENT_FRAGMENT_ACTION";
     private static final String KEY_FRAGMENT_CLASS_TO_ADD = "FragmentChauffeurActivity_KEY_FRAGMENT_CLASS_TO_ADD";
@@ -110,10 +108,14 @@ public abstract class FragmentChauffeurActivity extends AppCompatActivity {
     @NonNull
     protected abstract Fragment createRootFragmentInstance();
 
-    public void returnToRootFragment() {
+    @Override
+    public void returnToRootFragment(boolean immediately) {
         if (!mIsActivityShown) return;
 
-        getSupportFragmentManager().popBackStackImmediate(ROOT_FRAGMENT_TAG, 0 /*don't pop the root*/);
+        if (immediately)
+            getSupportFragmentManager().popBackStackImmediate(ROOT_FRAGMENT_TAG, 0 /*don't pop the root*/);
+        else
+            getSupportFragmentManager().popBackStack(ROOT_FRAGMENT_TAG, 0 /*don't pop the root*/);
     }
 
     /**
@@ -122,6 +124,7 @@ public abstract class FragmentChauffeurActivity extends AppCompatActivity {
      * @param fragment   any generic Fragment. For the ExpandedItem animation it is best to use a PassengerFragment
      * @param experience the animation UI experience to use for this transition.
      */
+    @Override
     public void addFragmentToUi(@NonNull Fragment fragment, @NonNull TransitionExperience experience) {
         if (!mIsActivityShown) return;
 
@@ -160,6 +163,7 @@ public abstract class FragmentChauffeurActivity extends AppCompatActivity {
         mIsActivityShown = false;
     }
 
+    @Override
     public final boolean isChaufferActivityVisible() {
         return mIsActivityShown;
     }

@@ -36,7 +36,7 @@ import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauffeurActivity {
+public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauffeurActivity implements PermissionsChauffeur {
 
     private static final String TAG = "Permissions";
     private static final String INTENT_PERMISSION_ACTION = "PermissionsFragmentChauffeurActivity_INTENT_PERMISSION_ACTION";
@@ -82,6 +82,7 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
     /**
      * Start a permissions request flow for the provided permissions.
      */
+    @Override
     public void startPermissionsRequest(PermissionsRequest permissionsRequest) {
         List<String> requiredPermissions = filterGrantedPermissions(this, permissionsRequest.getRequestedPermissions());
         if (requiredPermissions.size() > 0) {
