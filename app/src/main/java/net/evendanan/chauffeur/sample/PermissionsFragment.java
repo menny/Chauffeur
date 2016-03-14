@@ -167,7 +167,7 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         private final DialogInterface.OnClickListener mOnShowSettingsClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (mOwningActivity != null) mOwningActivity.startAppPermissionsActivity();
+                if (mOwningActivity != null) PermissionsFragmentChauffeurActivity.startAppPermissionsActivity(mOwningActivity);
             }
         };
 

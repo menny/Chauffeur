@@ -2,7 +2,6 @@ package net.evendanan.chauffeur.sample;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -28,7 +27,7 @@ public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivit
         findViewById(R.id.navigate_to_app_permissions_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startAppPermissionsActivity();
+                startAppPermissionsActivity(PermissionsMainActivity.this);
             }
         });
     }
