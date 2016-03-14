@@ -12,6 +12,8 @@ import android.widget.Toast;
 import net.evendanan.chauffeur.lib.permissions.PermissionsFragmentChauffeurActivity;
 import net.evendanan.chauffeur.lib.permissions.PermissionsRequest;
 
+import java.util.Locale;
+
 public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivity {
 
     @Override
@@ -55,13 +57,11 @@ public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivit
                 }
 
                 @Override
-                public void onPermissionsDenied() {
-                    Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was denied!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onUserDeclinedPermissionsCompletely() {
-                    Toast.makeText(getApplicationContext(), "READ_CONTACTS via notification was declined!", Toast.LENGTH_SHORT).show();
+                public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
+                    Toast.makeText(getApplicationContext(),
+                            String.format(Locale.US, "READ_CONTACTS via notification was denied! Granted %d, denied %d, declined %d.",
+                                    grantedPermissions.length, deniedPermissions.length, declinedPermissions.length),
+                            Toast.LENGTH_SHORT).show();
                 }
             };
         } else {
@@ -94,13 +94,11 @@ public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivit
         }
 
         @Override
-        public void onPermissionsDenied() {
-            Toast.makeText(getApplicationContext(), "READ_CONTACTS denied", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onUserDeclinedPermissionsCompletely() {
-            Toast.makeText(getApplicationContext(), "READ_CONTACTS declined completely", Toast.LENGTH_SHORT).show();
+        public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
+            Toast.makeText(getApplicationContext(),
+                    String.format(Locale.US, "READ_CONTACTS was denied! Granted %d, denied %d, declined %d.",
+                            grantedPermissions.length, deniedPermissions.length, declinedPermissions.length),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }

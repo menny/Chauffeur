@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import net.evendanan.chauffeur.lib.permissions.PermissionsFragmentChauffeurActivity;
 import net.evendanan.chauffeur.lib.permissions.PermissionsRequest;
+
+import java.util.Locale;
 
 
 public class PermissionsFragment extends Fragment implements View.OnClickListener {
@@ -119,13 +122,11 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         }
 
         @Override
-        public void onPermissionsDenied() {
-            Toast.makeText(getContext(), "Fragment READ_CONTACTS was denied!", Toast.LENGTH_SHORT).show();
-        }
+        public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
+            Toast.makeText(getContext(), String.format(Locale.US, "Fragment READ_CONTACTS was denied! Granted %d, denied %d, declined %d.",
+                    grantedPermissions.length, deniedPermissions.length, declinedPermissions.length),
+                    Toast.LENGTH_SHORT).show();
 
-        @Override
-        public void onUserDeclinedPermissionsCompletely() {
-            Toast.makeText(getContext(), "Fragment READ_CONTACTS was declined!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -140,13 +141,14 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         }
 
         @Override
-        public void onPermissionsDenied() {
-            Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was denied!", Toast.LENGTH_SHORT).show();
-        }
+        public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
+            if (deniedPermissions.length > 0) {
+                Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was denied!", Toast.LENGTH_SHORT).show();
+            }
 
-        @Override
-        public void onUserDeclinedPermissionsCompletely() {
-            Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was declined!", Toast.LENGTH_SHORT).show();
+            if (declinedPermissions.length > 0) {
+                Toast.makeText(getContext(), "Fragment ACCESS_FINE_LOCATION was declined!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -167,7 +169,8 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         private final DialogInterface.OnClickListener mOnShowSettingsClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (mOwningActivity != null) PermissionsFragmentChauffeurActivity.startAppPermissionsActivity(mOwningActivity);
+                if (mOwningActivity != null)
+                    PermissionsFragmentChauffeurActivity.startAppPermissionsActivity(mOwningActivity);
             }
         };
 
@@ -182,25 +185,22 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
         }
 
         @Override
-        public void onPermissionsDenied() {
+        public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Permissions Required");
-            builder.setMessage("For a better user experience, we want to know a bit about you.\n" +
-                    "If we know where you are and who are you friends, we can give you\n" +
-                    "a much better suggestions.");
-            builder.setPositiveButton("Okay", mOnRetryClickListener);
-            builder.setNegativeButton("No, thanks.", mOnCancelClickListener);
-            builder.show();
-        }
 
-        @Override
-        public void onUserDeclinedPermissionsCompletely() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Permissions Required");
-            builder.setMessage("You gotta understand! You can not use this feature if we\n" +
-                    "are not allowed to read your contacts and current location!\n" +
-                    "Please enable the required permissions in Settings.");
-            builder.setPositiveButton("Take me there", mOnShowSettingsClickListener);
+            if (declinedPermissions.length > 0) {
+                builder.setMessage("You gotta understand! You can not use this feature if we\n" +
+                        "are not allowed to read your contacts and current location!\n" +
+                        "Please enable the required permissions in Settings.");
+                builder.setPositiveButton("Take me there", mOnShowSettingsClickListener);
+            } else {
+                builder.setMessage("For a better user experience, we want to know a bit about you.\n" +
+                        "If we know where you are and who are you friends, we can give you\n" +
+                        "a much better suggestions.");
+                builder.setPositiveButton("Okay", mOnRetryClickListener);
+            }
+
             builder.setNegativeButton("No, thanks.", mOnCancelClickListener);
             builder.show();
         }

@@ -23,24 +23,16 @@ public interface PermissionsRequest {
     void onPermissionsGranted();
 
     /**
-     * Called if the user has denied at least one permission of the requested permissions.
+     * Called if the user has denied or declined at least one permission of the requested permissions.
      * At this point you have two options:
      * 1) show a dialog with a rationale for the requested permission and give the user an option
      * to grant the permission again. Makes sense if this is a critical permission to have.
      * 2) cancel the operation that requires this permission.
+     * @param grantedPermissions permissions the user has approved.
+     * @param deniedPermissions permissions the user has denied.
+     * @param declinedPermissions permissions the user has denied and asked NOT to be asked again.
      */
-    void onPermissionsDenied();
-
-    /**
-     * Called if the user has denied at least one permission of the requested permissions AND
-     * asked that it will not be asked for again.
-     * At this point you have two options:
-     * 1) show a dialog with a rationale for the requested permission and give the user an option
-     * to grant the permission again using the permissions page in Settings (use {@link PermissionsFragmentChauffeurActivity#startAppPermissionsActivity()}).
-     * Makes sense if this is a critical permission to have.
-     * 2) cancel the operation that requires this permission.
-     */
-    void onUserDeclinedPermissionsCompletely();
+    void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions);
 
 
     abstract class PermissionsRequestBase implements PermissionsRequest {

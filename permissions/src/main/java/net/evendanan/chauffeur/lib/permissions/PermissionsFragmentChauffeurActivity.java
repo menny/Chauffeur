@@ -104,23 +104,30 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
             if (allPermissionsResultsAreGranted(grantResults)) {
                 request.onPermissionsGranted();
             } else {
-                //if the result is DENIED and the OS says "do not show rationale",
-                // it means the user has ticked "Don't ask me again".
-                if (anyPermissionRequiresRationale(permissions)) {
-                    request.onPermissionsDenied();
-                } else {
-                    request.onUserDeclinedPermissionsCompletely();
+                ArrayList<String> grantedPermissions = new ArrayList<>(permissions.length - 1);
+                ArrayList<String> deniedPermissions = new ArrayList<>(permissions.length - 1);
+                ArrayList<String> declinedPermissions = new ArrayList<>(permissions.length - 1);
+                for (int permissionIndex = 0; permissionIndex < grantResults.length; permissionIndex++) {
+                    final int grantResult = grantResults[permissionIndex];
+                    final String permission = permissions[permissionIndex];
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                        grantedPermissions.add(permission);
+                    } else {
+                        //if the result is DENIED and the OS says "do not show rationale",
+                        // it means the user has ticked "Don't ask me again".
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                            deniedPermissions.add(permission);
+                        } else {
+                            declinedPermissions.add(permission);
+                        }
+                    }
                 }
+                request.onPermissionsDenied(
+                        grantedPermissions.toArray(new String[grantedPermissions.size()]),
+                        deniedPermissions.toArray(new String[deniedPermissions.size()]),
+                        declinedPermissions.toArray(new String[declinedPermissions.size()]));
             }
         }
-    }
-
-    private boolean anyPermissionRequiresRationale(String[] permissions) {
-        for (String permission : permissions) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) return true;
-        }
-
-        return false;
     }
 
     private boolean allPermissionsResultsAreGranted(int[] grantResults) {
@@ -167,9 +174,10 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
      * Creates a {@link PermissionsRequest} from the intercepted Intent (which was created using {@link #createIntentToPermissionsRequest(Context, Class, int, String...)}.
      * Default implementation will return an implementation with no-op callbacks, override this method if you want to do
      * something more specific.
-     * @param requestId request-id parsed from the Intent.
+     *
+     * @param requestId   request-id parsed from the Intent.
      * @param permissions permissions array parsed from the Intent.
-     * @param intent the intercepted Intent
+     * @param intent      the intercepted Intent
      */
     @NonNull
     protected PermissionsRequest createPermissionRequestFromIntentRequest(int requestId, @NonNull String[] permissions, @NonNull Intent intent) {
@@ -180,12 +188,7 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
             }
 
             @Override
-            public void onPermissionsDenied() {
-                /*no-op*/
-            }
-
-            @Override
-            public void onUserDeclinedPermissionsCompletely() {
+            public void onPermissionsDenied(@NonNull String[] grantedPermissions, @NonNull String[] deniedPermissions, @NonNull String[] declinedPermissions) {
                 /*no-op*/
             }
         };
