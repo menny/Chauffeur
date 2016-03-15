@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import net.evendanan.chauffeur.lib.permissions.PermissionsFragmentChauffeurActivity;
 import net.evendanan.chauffeur.lib.permissions.PermissionsRequest;
+import net.evendanan.chauffeur.lib.permissions.PermissionsUtil;
 
 import java.util.Locale;
 
@@ -170,7 +171,7 @@ public class PermissionsFragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (mOwningActivity != null)
-                    PermissionsFragmentChauffeurActivity.startAppPermissionsActivity(mOwningActivity);
+                    PermissionsUtil.startAppPermissionsActivity(mOwningActivity);
             }
         };
 

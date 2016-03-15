@@ -29,7 +29,7 @@ public class PermissionsMainActivity extends PermissionsFragmentChauffeurActivit
         findViewById(R.id.navigate_to_app_permissions_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startAppPermissionsActivity(PermissionsMainActivity.this);
+                startAppPermissionsActivity();
             }
         });
     }
