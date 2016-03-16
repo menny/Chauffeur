@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Menny Even-Danan
+ * Copyright (c) 2016 Menny Even-Danan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,21 @@
 
 package net.evendanan.chauffeur.lib.permissions;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.SparseArrayCompat;
-import android.util.Log;
 
 import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauffeurActivity implements PermissionsChauffeur {
 
-    private static final String TAG = "Permissions";
     private static final String INTENT_PERMISSION_ACTION = "PermissionsFragmentChauffeurActivity_INTENT_PERMISSION_ACTION";
     private static final String PERMISSION_ARG_REQUEST_ID = "PermissionsFragmentChauffeurActivity_PERMISSION_ARG_REQUEST_ID";
     private static final String PERMISSION_ARG_REQUIRED_PERMISSIONS = "PermissionsFragmentChauffeurActivity_PERMISSION_ARG_REQUIRED_PERMISSIONS";
@@ -54,8 +46,7 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
      */
     @Nullable
     public static Intent createIntentToPermissionsRequest(@NonNull Context context, @NonNull Class<? extends PermissionsFragmentChauffeurActivity> mainActivity, int requestId, @NonNull String... permissions) {
-        List<String> requiredPermissions = filterGrantedPermissions(context, permissions);
-        if (requiredPermissions.size() > 0) {
+        if (anyPermissionNotGranted(context, permissions)) {
             Intent intent = new Intent(context, mainActivity);
             intent.setAction(INTENT_PERMISSION_ACTION);
             intent.putExtra(PERMISSION_ARG_REQUEST_ID, requestId);
@@ -66,17 +57,14 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
         }
     }
 
-    @NonNull
-    private static List<String> filterGrantedPermissions(@NonNull Context context, @NonNull String... permissions) {
-        ArrayList<String> requiredPermissions = new ArrayList<>();
+    private static boolean anyPermissionNotGranted(@NonNull Context context, @NonNull String... permissions) {
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                requiredPermissions.add(permission);
-                Log.i(TAG, "Will ask for permission '" + permission + "'.");
+                return true;
             }
         }
 
-        return requiredPermissions;
+        return false;
     }
 
     /**
@@ -84,11 +72,10 @@ public abstract class PermissionsFragmentChauffeurActivity extends FragmentChauf
      */
     @Override
     public void startPermissionsRequest(PermissionsRequest permissionsRequest) {
-        List<String> requiredPermissions = filterGrantedPermissions(this, permissionsRequest.getRequestedPermissions());
-        if (requiredPermissions.size() > 0) {
-            //asking for permissions
+        if (anyPermissionNotGranted(this, permissionsRequest.getRequestedPermissions())) {
+            //we have permissions which require check
             mPermissionsRequestsInProgress.put(permissionsRequest.getRequestCode(), permissionsRequest);
-            ActivityCompat.requestPermissions(this, requiredPermissions.toArray(new String[requiredPermissions.size()]), permissionsRequest.getRequestCode());
+            ActivityCompat.requestPermissions(this, permissionsRequest.getRequestedPermissions(), permissionsRequest.getRequestCode());
         } else {
             permissionsRequest.onPermissionsGranted();
         }
