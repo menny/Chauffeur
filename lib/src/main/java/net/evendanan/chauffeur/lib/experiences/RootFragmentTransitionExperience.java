@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import net.evendanan.chauffeur.lib.FragmentChauffeurActivity;
@@ -44,13 +43,12 @@ import net.evendanan.chauffeur.lib.SimpleTransitionExperience;
     };
 
     @Override
-    public void onPreTransaction(@NonNull FragmentChauffeurActivity fragmentChauffeurActivity, @NonNull Fragment fragment) {
-        //clearing the stack we currently have.
-        fragmentChauffeurActivity.getSupportFragmentManager().popBackStack(FragmentChauffeurActivity.ROOT_FRAGMENT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-    }
-
-    @Override
     public void onAddFragmentToContainer(@NonNull FragmentChauffeurActivity fragmentChauffeurActivity, @NonNull Fragment fragment, @NonNull FragmentTransaction transaction, @IdRes int containerId) {
+        transaction.setAllowOptimization(true);
+        final Fragment currentlyShownFragment = fragmentChauffeurActivity.getSupportFragmentManager().findFragmentById(containerId);
+        if (currentlyShownFragment != null) {
+            transaction.remove(currentlyShownFragment);
+        }
         transaction.replace(containerId, fragment);
         transaction.addToBackStack(FragmentChauffeurActivity.ROOT_FRAGMENT_TAG);
     }
