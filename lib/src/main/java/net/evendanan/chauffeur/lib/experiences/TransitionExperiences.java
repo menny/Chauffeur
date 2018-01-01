@@ -23,7 +23,7 @@ public class TransitionExperiences {
      */
     public static final TransitionExperience DEEPER_EXPERIENCE_TRANSITION = new SimpleTransitionExperience(
             R.anim.ui_context_deeper_add_in, R.anim.ui_context_deeper_add_out,
-            R.anim.ui_context_deeper_pop_in, R.anim.ui_context_deeper_pop_out);
+            R.anim.ui_context_deeper_pop_in, R.anim.ui_context_fade_out);
 
     public static final TransitionExperience OUTSIDE_ON_TOP_EXPERIENCE_TRANSITION = new OutsideOnTopTransitionExperience();
 
