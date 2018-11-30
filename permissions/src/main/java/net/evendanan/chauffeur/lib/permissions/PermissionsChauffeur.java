@@ -2,7 +2,7 @@ package net.evendanan.chauffeur.lib.permissions;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import net.evendanan.chauffeur.lib.FragmentChauffeur;
 
