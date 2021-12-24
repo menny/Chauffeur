@@ -1,3 +1,6 @@
+# ARCHIVED
+**NOTE:** This library has been surpassed by [Android Jetpack Navigation Component](https://developer.android.com/guide/navigation) and [Easy Permissions](https://github.com/googlesamples/easypermissions).
+
 # Chauffeur
 A very simple fragments driver mechanism.
 In addition, it provides a simple Android Marshmallow Runtime Permissions handling.
